@@ -7,4 +7,8 @@ public class Airport {
     public ArrayList<Object> getHangar() {
         return hangar;
     }
+
+    public void landPlane (Plane plane) {
+        hangar.add(plane);
+    }
 }
