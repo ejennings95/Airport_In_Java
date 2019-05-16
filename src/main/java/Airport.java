@@ -16,8 +16,12 @@ public class Airport {
         }
     }
 
-    public void takeOffPlane (Plane plane) {
-        if (hangar.contains(plane)) {
+    public void takeOffPlane (Plane plane) throws PlaneAlreadyFlyingException, PlaneNotInHangarException {
+        if (plane.getStatus() == "flying") {
+            throw new PlaneAlreadyFlyingException("Plane is already in the air.");
+        } else if (!hangar.contains(plane)) {
+            throw new PlaneNotInHangarException("Plane is not in this airport hangar.");
+        } else {
             hangar.remove(plane);
         }
     }

@@ -34,7 +34,7 @@ class AirportTest {
 
     @DisplayName("should be able to take off a plane")
     @Test
-    void takeOffPlane() throws PlaneAlreadyLandedException {
+    void takeOffPlane() throws PlaneAlreadyLandedException, PlaneAlreadyFlyingException, PlaneNotInHangarException {
         Airport heathrow = new Airport();
         Plane plane = mock(Plane.class);
         heathrow.landPlane(plane);
@@ -43,7 +43,7 @@ class AirportTest {
         assertEquals(0, heathrow.getHangar().size());
     }
 
-    @DisplayName("should not be able to land an plane with a landed status")
+    @DisplayName("should not be able to land a plane with a landed status")
     @Test
     void unableToLandPlane() throws PlaneAlreadyLandedException {
         Airport heathrow = new Airport();
@@ -51,6 +51,30 @@ class AirportTest {
         when(plane.getStatus()).thenReturn("landed");
         Assertions.assertThrows(PlaneAlreadyLandedException.class, () -> {
             heathrow.landPlane(plane);
+        });
+    }
+
+    @DisplayName("should not be able to take off a plane with a flying status")
+    @Test
+    void unableToTakeOffFlyingPlane() throws PlaneAlreadyFlyingException {
+        Airport heathrow = new Airport();
+        Plane plane = mock(Plane.class);
+        when(plane.getStatus()).thenReturn("flying");
+        Assertions.assertThrows(PlaneAlreadyFlyingException.class, () -> {
+            heathrow.takeOffPlane(plane);
+        });
+    }
+
+    @DisplayName("should not be able to take off a plane if not in hangar")
+    @Test
+    void unableToTakeOffPlaneNotInHangar() throws PlaneNotInHangarException, PlaneAlreadyLandedException {
+        Airport heathrow = new Airport();
+        Airport gatwick = new Airport();
+        Plane plane = mock(Plane.class);
+        heathrow.landPlane(plane);
+        when(plane.getStatus()).thenReturn("landed");
+        Assertions.assertThrows(PlaneNotInHangarException.class, () -> {
+            gatwick.takeOffPlane(plane);
         });
     }
 }
