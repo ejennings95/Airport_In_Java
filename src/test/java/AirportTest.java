@@ -8,8 +8,7 @@ import org.mockito.Mockito;
 import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 class AirportTest {
 
@@ -25,17 +24,33 @@ class AirportTest {
 
     @DisplayName("should be able to land a plane")
     @Test
-    void landPlane() throws PlaneAlreadyLandedException {
-        Airport heathrow = new Airport();
+    void landPlane() throws PlaneAlreadyLandedException, BadWeatherException {
+        Weather weather = spy(Weather.class);
+        Airport heathrow = new Airport(weather);
+        when(weather.randomise()).thenReturn(0);
         Plane plane = mock(Plane.class);
         heathrow.landPlane(plane);
         assertEquals(1, heathrow.getHangar().size());
     }
 
+    @DisplayName("should not be able to land a plane in stormy weather")
+    @Test
+    void stormyLandPlane() throws PlaneAlreadyLandedException, BadWeatherException {
+        Weather weather = spy(Weather.class);
+        Airport heathrow = new Airport(weather);
+        when(weather.randomise()).thenReturn(1);
+        Plane plane = mock(Plane.class);
+        Assertions.assertThrows(BadWeatherException.class, () -> {
+            heathrow.landPlane(plane);
+        });
+    }
+
     @DisplayName("should be able to take off a plane")
     @Test
-    void takeOffPlane() throws PlaneAlreadyLandedException, PlaneAlreadyFlyingException, PlaneNotInHangarException {
-        Airport heathrow = new Airport();
+    void takeOffPlane() throws PlaneAlreadyLandedException, PlaneAlreadyFlyingException, PlaneNotInHangarException, BadWeatherException {
+        Weather weather = spy(Weather.class);
+        Airport heathrow = new Airport(weather);
+        when(weather.randomise()).thenReturn(0);
         Plane plane = mock(Plane.class);
         heathrow.landPlane(plane);
         assertEquals(1, heathrow.getHangar().size());
@@ -43,10 +58,26 @@ class AirportTest {
         assertEquals(0, heathrow.getHangar().size());
     }
 
+    @DisplayName("should not be able to take off a plane in stormy weather")
+    @Test
+    void stormyTakeOffPlane() throws PlaneAlreadyLandedException, BadWeatherException {
+        Weather weather = spy(Weather.class);
+        Airport heathrow = new Airport(weather);
+        when(weather.randomise()).thenReturn(0);
+        Plane plane = mock(Plane.class);
+        heathrow.landPlane(plane);
+        Assertions.assertThrows(BadWeatherException.class, () -> {
+            when(weather.randomise()).thenReturn(1);
+            heathrow.takeOffPlane(plane);
+        });
+    }
+
     @DisplayName("should not be able to land a plane with a landed status")
     @Test
-    void unableToLandPlane() throws PlaneAlreadyLandedException {
-        Airport heathrow = new Airport();
+    void unableToLandPlane() throws PlaneAlreadyLandedException, BadWeatherException {
+        Weather weather = spy(Weather.class);
+        Airport heathrow = new Airport(weather);
+        when(weather.randomise()).thenReturn(0);
         Plane plane = mock(Plane.class);
         when(plane.getStatus()).thenReturn("landed");
         Assertions.assertThrows(PlaneAlreadyLandedException.class, () -> {
@@ -56,8 +87,10 @@ class AirportTest {
 
     @DisplayName("should not be able to take off a plane with a flying status")
     @Test
-    void unableToTakeOffFlyingPlane() throws PlaneAlreadyFlyingException {
-        Airport heathrow = new Airport();
+    void unableToTakeOffFlyingPlane() throws PlaneAlreadyFlyingException, BadWeatherException {
+        Weather weather = spy(Weather.class);
+        Airport heathrow = new Airport(weather);
+        when(weather.randomise()).thenReturn(0);
         Plane plane = mock(Plane.class);
         when(plane.getStatus()).thenReturn("flying");
         Assertions.assertThrows(PlaneAlreadyFlyingException.class, () -> {
@@ -67,9 +100,11 @@ class AirportTest {
 
     @DisplayName("should not be able to take off a plane if not in hangar")
     @Test
-    void unableToTakeOffPlaneNotInHangar() throws PlaneNotInHangarException, PlaneAlreadyLandedException {
-        Airport heathrow = new Airport();
-        Airport gatwick = new Airport();
+    void unableToTakeOffPlaneNotInHangar() throws PlaneNotInHangarException, PlaneAlreadyLandedException, BadWeatherException {
+        Weather weather = spy(Weather.class);
+        Airport heathrow = new Airport(weather);
+        Airport gatwick = new Airport(weather);
+        when(weather.randomise()).thenReturn(0);
         Plane plane = mock(Plane.class);
         heathrow.landPlane(plane);
         when(plane.getStatus()).thenReturn("landed");
