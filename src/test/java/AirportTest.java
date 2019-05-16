@@ -25,4 +25,15 @@ class AirportTest {
         assertEquals(1, heathrow.getHangar().size());
     }
 
+    @DisplayName("should be able to take off a plane")
+    @Test
+    void takeOffPlane() {
+        Airport heathrow = new Airport();
+        Plane plane = mock(Plane.class);
+        heathrow.landPlane(plane);
+        assertEquals(1, heathrow.getHangar().size());
+        heathrow.takeOffPlane(plane);
+        assertEquals(0, heathrow.getHangar().size());
+    }
+
 }

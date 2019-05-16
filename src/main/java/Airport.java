@@ -11,4 +11,10 @@ public class Airport {
     public void landPlane (Plane plane) {
         hangar.add(plane);
     }
+
+    public void takeOffPlane (Plane plane) {
+        if (hangar.contains(plane)) {
+            hangar.remove(plane);
+        }
+    }
 }
