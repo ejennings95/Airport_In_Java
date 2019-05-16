@@ -8,8 +8,12 @@ public class Airport {
         return hangar;
     }
 
-    public void landPlane (Plane plane) {
-        hangar.add(plane);
+    public void landPlane (Plane plane) throws PlaneAlreadyLandedException {
+        if (plane.getStatus() == "landed") {
+            throw new PlaneAlreadyLandedException("Plane is already landed in an airport.");
+        } else {
+            hangar.add(plane);
+        }
     }
 
     public void takeOffPlane (Plane plane) {
