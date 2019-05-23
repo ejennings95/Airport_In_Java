@@ -23,6 +23,7 @@ public class Airport {
                 throw new PlaneAlreadyLandedException("Plane is already landed in an airport.");
             } else {
                 hangar.add(plane);
+                plane.landed();
             }
         }
     }
@@ -38,6 +39,7 @@ public class Airport {
                 throw new PlaneNotInHangarException("Plane is not in this airport hangar.");
             } else {
                 hangar.remove(plane);
+                plane.flying();
             }
         }
     }
